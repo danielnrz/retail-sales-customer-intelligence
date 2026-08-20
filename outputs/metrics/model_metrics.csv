@@ -3,3 +3,5 @@ sales_forecast_baseline,MAE,53620.99
 sales_forecast_baseline,RMSE,66031.4
 sales_forecast_linear_regression,MAE,52379.8
 sales_forecast_linear_regression,RMSE,64765.13
+demand_prediction,MAE,276.25
+demand_prediction,RMSE,519.96
