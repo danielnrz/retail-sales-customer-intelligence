@@ -3,7 +3,7 @@ Runs the full retail analytics pipeline from start to finish:
 
 download -> clean -> database -> SQL analysis -> EDA -> sales forecasting
 -> demand prediction -> segmentation -> churn prediction -> price
-estimation -> recommendations
+estimation -> recommendations -> dashboard data
 
 Just run:
     python run_pipeline.py
@@ -28,6 +28,7 @@ PIPELINE_STEPS = [
     ("scripts/churn_prediction.py", "Predicting churn"),
     ("scripts/price_prediction.py", "Estimating product prices"),
     ("scripts/recommendation_system.py", "Building recommendation system"),
+    ("scripts/build_dashboard_data.py", "Building dashboard data"),
 ]
 
 
