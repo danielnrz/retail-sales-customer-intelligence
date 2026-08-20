@@ -18,3 +18,4 @@ price_baseline,RMSE,4.475
 price_prediction,MAE,1.311
 price_prediction,RMSE,3.692
 price_prediction,R2,0.287
+recommendation,HitRate@5,0.21
