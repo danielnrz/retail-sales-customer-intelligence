@@ -1,10 +1,4 @@
 model,metric,value
-sales_forecast_baseline,MAE,53620.99
-sales_forecast_baseline,RMSE,66031.4
-sales_forecast_linear_regression,MAE,52379.8
-sales_forecast_linear_regression,RMSE,64765.13
-demand_prediction,MAE,276.25
-demand_prediction,RMSE,519.96
 churn_logistic_regression,precision,0.75
 churn_logistic_regression,recall,0.81
 churn_logistic_regression,F1,0.779
@@ -18,4 +12,13 @@ price_baseline,RMSE,4.475
 price_prediction,MAE,1.311
 price_prediction,RMSE,3.692
 price_prediction,R2,0.287
-recommendation,HitRate@5,0.21
+sales_forecast_baseline,MAE,53620.99
+sales_forecast_baseline,RMSE,66031.4
+sales_forecast_gradient_boosting,MAE,53728.44
+sales_forecast_gradient_boosting,RMSE,74053.65
+demand_baseline,MAE,269.49
+demand_baseline,RMSE,533.63
+demand_gradient_boosting,MAE,245.89
+demand_gradient_boosting,RMSE,418.43
+recommendation_popularity_baseline,HitRate@5,0.163
+recommendation_item_item,HitRate@5,0.21

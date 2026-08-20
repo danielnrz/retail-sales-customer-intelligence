@@ -2,9 +2,16 @@
 Forecasts total weekly retail revenue.
 
 Builds a weekly revenue series from the cleaned transactions, compares a
-naive "last week repeats" baseline against a regression model trained on
-lag and rolling average features, and saves the evaluation plot and
-metrics.
+naive "last week repeats" baseline against a few regression models
+trained on lag and rolling average features.
+
+Model selection uses a validation period, not the final test period. The
+final test period is only touched once, after the winning model has
+already been chosen. This avoids picking whichever model happens to look
+best on the exact weeks we report results for.
+
+Split, in chronological order:
+    training period -> validation period -> final test period
 
 Run scripts/clean_data.py first so data/processed/retail_clean.csv exists.
 """
@@ -21,9 +28,11 @@ RANDOM_STATE = 42
 
 PROCESSED_DIR = os.path.join("data", "processed")
 FIGURES_DIR = os.path.join("outputs", "figures")
+TABLES_DIR = os.path.join("outputs", "tables")
 METRICS_PATH = os.path.join("outputs", "metrics", "model_metrics.csv")
 
 TEST_WEEKS = 15
+VALIDATION_WEEKS = 12
 
 
 def build_weekly_revenue():
@@ -57,11 +66,14 @@ def add_features(weekly):
 
 
 def append_metrics(rows):
+    # the winning model name changes depending on the validation result, so
+    # clear out any old "sales_forecast_<model>" rows first, otherwise a
+    # stale row from a previously winning model would stick around
     os.makedirs(os.path.dirname(METRICS_PATH), exist_ok=True)
     new_rows = pd.DataFrame(rows, columns=["model", "metric", "value"])
     if os.path.exists(METRICS_PATH):
         existing = pd.read_csv(METRICS_PATH)
-        existing = existing[~existing["model"].isin(new_rows["model"].unique())]
+        existing = existing[~existing["model"].str.startswith("sales_forecast")]
         combined = pd.concat([existing, new_rows], ignore_index=True)
     else:
         combined = new_rows
@@ -70,6 +82,7 @@ def append_metrics(rows):
 
 def main():
     os.makedirs(FIGURES_DIR, exist_ok=True)
+    os.makedirs(TABLES_DIR, exist_ok=True)
 
     weekly = build_weekly_revenue()
     print(f"Weekly revenue series has {len(weekly)} complete weeks")
@@ -81,18 +94,15 @@ def main():
     X = weekly[feature_cols]
     y = weekly["revenue"]
 
-    split_index = len(weekly) - TEST_WEEKS
-    X_train, X_test = X.iloc[:split_index], X.iloc[split_index:]
-    y_train, y_test = y.iloc[:split_index], y.iloc[split_index:]
-    naive_test = weekly["naive_prediction"].iloc[split_index:]
-    weeks_test = weekly["week_start"].iloc[split_index:]
+    test_start = len(weekly) - TEST_WEEKS
+    val_start = test_start - VALIDATION_WEEKS
 
-    print(f"Train weeks: {len(X_train)}, Test weeks: {len(X_test)}")
+    X_train, X_val, X_test = X.iloc[:val_start], X.iloc[val_start:test_start], X.iloc[test_start:]
+    y_train, y_val, y_test = y.iloc[:val_start], y.iloc[val_start:test_start], y.iloc[test_start:]
+    naive_test = weekly["naive_prediction"].iloc[test_start:]
+    weeks_test = weekly["week_start"].iloc[test_start:]
 
-    # naive baseline: next week's revenue = previous week's revenue
-    baseline_mae = mean_absolute_error(y_test, naive_test)
-    baseline_rmse = np.sqrt(mean_squared_error(y_test, naive_test))
-    print(f"\nNaive baseline  MAE: {baseline_mae:,.0f}  RMSE: {baseline_rmse:,.0f}")
+    print(f"Train weeks: {len(X_train)}, Validation weeks: {len(X_val)}, Test weeks: {len(X_test)}")
 
     candidates = {
         "linear_regression": LinearRegression(),
@@ -100,24 +110,40 @@ def main():
         "gradient_boosting": GradientBoostingRegressor(random_state=RANDOM_STATE),
     }
 
-    results = {}
+    print("\nValidation results (used to pick the model, not reported as final):")
+    val_scores = {}
     for name, model in candidates.items():
         model.fit(X_train, y_train)
-        preds = model.predict(X_test)
-        mae = mean_absolute_error(y_test, preds)
-        rmse = np.sqrt(mean_squared_error(y_test, preds))
-        results[name] = {"model": model, "mae": mae, "rmse": rmse, "preds": preds}
-        print(f"{name:<20} MAE: {mae:,.0f}  RMSE: {rmse:,.0f}")
+        val_preds = model.predict(X_val)
+        val_mae = mean_absolute_error(y_val, val_preds)
+        val_scores[name] = val_mae
+        print(f"{name:<20} validation MAE: {val_mae:,.0f}")
 
-    best_name = min(results, key=lambda k: results[k]["mae"])
-    best = results[best_name]
-    print(f"\nBest model: {best_name}")
+    best_name = min(val_scores, key=val_scores.get)
+    print(f"\nBest model on validation: {best_name}")
+
+    # refit the winning model on train + validation, then touch the final
+    # test period exactly once
+    X_train_val = pd.concat([X_train, X_val])
+    y_train_val = pd.concat([y_train, y_val])
+    best_model = candidates[best_name]
+    best_model.fit(X_train_val, y_train_val)
+    test_preds = best_model.predict(X_test)
+
+    baseline_mae = mean_absolute_error(y_test, naive_test)
+    baseline_rmse = np.sqrt(mean_squared_error(y_test, naive_test))
+    model_mae = mean_absolute_error(y_test, test_preds)
+    model_rmse = np.sqrt(mean_squared_error(y_test, test_preds))
+
+    print(f"\nFinal test results ({TEST_WEEKS} untouched weeks):")
+    print(f"Naive baseline       MAE: {baseline_mae:,.0f}  RMSE: {baseline_rmse:,.0f}")
+    print(f"{best_name:<20} MAE: {model_mae:,.0f}  RMSE: {model_rmse:,.0f}")
 
     fig, ax = plt.subplots(figsize=(10, 5))
     ax.plot(weeks_test, y_test.values, marker="o", label="Actual")
-    ax.plot(weeks_test, best["preds"], marker="o", label=f"Predicted ({best_name})")
+    ax.plot(weeks_test, test_preds, marker="o", label=f"Predicted ({best_name})")
     ax.plot(weeks_test, naive_test.values, linestyle="--", label="Naive baseline")
-    ax.set_title("Weekly Revenue Forecast: Actual vs Predicted")
+    ax.set_title("Weekly Revenue Forecast: Actual vs Predicted (Final Test Weeks)")
     ax.set_xlabel("Week")
     ax.set_ylabel("Revenue (GBP)")
     ax.tick_params(axis="x", rotation=45)
@@ -126,11 +152,20 @@ def main():
     plt.close(fig)
     print("Saved outputs/figures/12_sales_forecast_actual_vs_predicted.png")
 
+    results_table = pd.DataFrame({
+        "week_start": weeks_test.values,
+        "actual_revenue": y_test.values,
+        "predicted_revenue": test_preds,
+        "naive_prediction": naive_test.values,
+    })
+    results_table.to_csv(os.path.join(TABLES_DIR, "sales_forecast_results.csv"), index=False)
+    print("Saved outputs/tables/sales_forecast_results.csv")
+
     metric_rows = [
         ["sales_forecast_baseline", "MAE", round(baseline_mae, 2)],
         ["sales_forecast_baseline", "RMSE", round(baseline_rmse, 2)],
-        [f"sales_forecast_{best_name}", "MAE", round(best["mae"], 2)],
-        [f"sales_forecast_{best_name}", "RMSE", round(best["rmse"], 2)],
+        [f"sales_forecast_{best_name}", "MAE", round(model_mae, 2)],
+        [f"sales_forecast_{best_name}", "RMSE", round(model_rmse, 2)],
     ]
     append_metrics(metric_rows)
     print("Saved metrics to outputs/metrics/model_metrics.csv")
