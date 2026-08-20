@@ -13,3 +13,8 @@ churn_random_forest,precision,0.737
 churn_random_forest,recall,0.787
 churn_random_forest,F1,0.761
 churn_random_forest,ROC_AUC,0.793
+price_baseline,MAE,1.822
+price_baseline,RMSE,4.475
+price_prediction,MAE,1.311
+price_prediction,RMSE,3.692
+price_prediction,R2,0.287
