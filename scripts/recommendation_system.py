@@ -13,6 +13,11 @@ considers:
   - products bought by at least MIN_CUSTOMERS_PER_PRODUCT different
     customers
 
+The evaluation compares the item-item recommender against a simple
+popularity baseline (recommend whatever sells the most) on the exact same
+training period and the exact same evaluation customers, so the
+comparison is fair.
+
 Run scripts/clean_data.py first so data/processed/purchases_clean.csv exists.
 """
 
@@ -27,6 +32,7 @@ MIN_PRODUCTS_PER_CUSTOMER = 5
 MIN_CUSTOMERS_PER_PRODUCT = 20
 TOP_N = 5
 EVAL_HOLDOUT_DAYS = 60
+DASHBOARD_PRODUCT_COUNT = 40
 
 PROCESSED_DIR = os.path.join("data", "processed")
 TABLES_DIR = os.path.join("outputs", "tables")
@@ -96,6 +102,11 @@ def recommend_for_customer(item_similarity, customer_products, descriptions, cus
     return result[["stock_code", "description", "score"]]
 
 
+def recommend_popular(popularity_ranking, bought_codes, n=TOP_N):
+    recs = [code for code in popularity_ranking if code not in bought_codes]
+    return recs[:n]
+
+
 def evaluate_hit_rate(df):
     cutoff = df["invoice_date"].max() - pd.Timedelta(days=EVAL_HOLDOUT_DAYS)
     train = df[df["invoice_date"] < cutoff]
@@ -104,27 +115,44 @@ def evaluate_hit_rate(df):
     train = filter_interactions(train)
     if train.empty:
         print("Not enough training interactions to evaluate")
-        return None
+        return None, None
 
     item_similarity, customer_products = build_similarity_matrix(train)
     descriptions = train.groupby("stock_code")["description"].agg(lambda x: x.value_counts().index[0])
+
+    # popularity baseline: most bought products in the same training period,
+    # measured by number of distinct customers who bought each one
+    popularity_ranking = (
+        train.groupby("stock_code")["customer_id"].nunique().sort_values(ascending=False).index.tolist()
+    )
 
     test_products_by_customer = test.groupby("customer_id")["stock_code"].apply(set).to_dict()
 
     eval_customers = [c for c in customer_products if c in test_products_by_customer]
     print(f"Evaluating hit rate@{TOP_N} on {len(eval_customers)} customers with purchases in both periods")
 
-    hits = 0
+    item_item_hits = 0
+    popularity_hits = 0
     for customer_id in eval_customers:
-        recs = recommend_for_customer(item_similarity, customer_products, descriptions, customer_id, n=TOP_N)
-        recommended_codes = set(recs["stock_code"])
         actual_future_codes = test_products_by_customer[customer_id]
-        if recommended_codes & actual_future_codes:
-            hits += 1
 
-    hit_rate = hits / len(eval_customers) if eval_customers else 0.0
-    print(f"Hit Rate@{TOP_N}: {hit_rate:.3f} ({hits}/{len(eval_customers)})")
-    return hit_rate
+        recs = recommend_for_customer(item_similarity, customer_products, descriptions, customer_id, n=TOP_N)
+        if set(recs["stock_code"]) & actual_future_codes:
+            item_item_hits += 1
+
+        popular_recs = recommend_popular(popularity_ranking, customer_products[customer_id], n=TOP_N)
+        if set(popular_recs) & actual_future_codes:
+            popularity_hits += 1
+
+    n_eval = len(eval_customers)
+    item_item_rate = item_item_hits / n_eval if n_eval else 0.0
+    popularity_rate = popularity_hits / n_eval if n_eval else 0.0
+
+    print(f"Popularity baseline   Hit Rate@{TOP_N}: {popularity_rate:.3f} ({popularity_hits}/{n_eval})")
+    print(f"Item-item recommender Hit Rate@{TOP_N}: {item_item_rate:.3f} ({item_item_hits}/{n_eval})")
+    print(f"Absolute improvement over popularity baseline: {item_item_rate - popularity_rate:.3f}")
+
+    return popularity_rate, item_item_rate
 
 
 def append_metrics(rows):
@@ -132,7 +160,7 @@ def append_metrics(rows):
     new_rows = pd.DataFrame(rows, columns=["model", "metric", "value"])
     if os.path.exists(METRICS_PATH):
         existing = pd.read_csv(METRICS_PATH)
-        existing = existing[~existing["model"].isin(new_rows["model"].unique())]
+        existing = existing[~existing["model"].str.startswith("recommendation")]
         combined = pd.concat([existing, new_rows], ignore_index=True)
     else:
         combined = new_rows
@@ -146,10 +174,13 @@ def main():
     print(f"Full purchases table: {len(df):,} rows")
 
     print(f"\nRunning chronological hit rate evaluation ({EVAL_HOLDOUT_DAYS} day holdout)...")
-    hit_rate = evaluate_hit_rate(df)
-    if hit_rate is not None:
-        append_metrics([["recommendation", "HitRate@5", round(hit_rate, 3)]])
-        print("Saved metric to outputs/metrics/model_metrics.csv")
+    popularity_rate, item_item_rate = evaluate_hit_rate(df)
+    if item_item_rate is not None:
+        append_metrics([
+            ["recommendation_popularity_baseline", "HitRate@5", round(popularity_rate, 3)],
+            ["recommendation_item_item", "HitRate@5", round(item_item_rate, 3)],
+        ])
+        print("Saved metrics to outputs/metrics/model_metrics.csv")
 
     print(f"\nBuilding final recommender on all data...")
     filtered = filter_interactions(df)
@@ -161,21 +192,25 @@ def main():
     item_similarity, customer_products = build_similarity_matrix(filtered)
     descriptions = filtered.groupby("stock_code")["description"].agg(lambda x: x.value_counts().index[0])
 
-    # show a few examples: similar products for 3 popular items, and
-    # recommendations for 3 customers
-    example_products = filtered["stock_code"].value_counts().head(3).index
-    print("\nExample: products similar to popular items")
+    # build a similar-products table for the most popular products, this
+    # backs both the printed examples and the dashboard product selector
+    popular_products = filtered["stock_code"].value_counts().head(DASHBOARD_PRODUCT_COUNT).index
+    print(f"\nBuilding similar-product recommendations for the {len(popular_products)} most popular products")
     similar_rows = []
-    for code in example_products:
+    for code in popular_products:
         recs = recommend_similar_products(item_similarity, descriptions, code, n=TOP_N)
         recs.insert(0, "source_stock_code", code)
         recs.insert(1, "source_description", descriptions.get(code, ""))
-        print(f"\n{code} - {descriptions.get(code, '')}")
-        print(recs[["stock_code", "description", "similarity"]].to_string(index=False))
         similar_rows.append(recs)
-    pd.concat(similar_rows, ignore_index=True).to_csv(
-        os.path.join(TABLES_DIR, "recommendation_similar_products_examples.csv"), index=False
-    )
+    similar_table = pd.concat(similar_rows, ignore_index=True)
+    similar_table.to_csv(os.path.join(TABLES_DIR, "recommendation_similar_products_examples.csv"), index=False)
+    print("Saved outputs/tables/recommendation_similar_products_examples.csv")
+
+    print("\nExample: products similar to a few popular items")
+    for code in popular_products[:3]:
+        example = similar_table[similar_table["source_stock_code"] == code]
+        print(f"\n{code} - {descriptions.get(code, '')}")
+        print(example[["stock_code", "description", "similarity"]].to_string(index=False))
 
     example_customers = pd.Series(list(customer_products.keys())).sample(n=3, random_state=RANDOM_STATE)
     print("\nExample: recommendations for individual customers")
@@ -189,9 +224,7 @@ def main():
     pd.concat(customer_rows, ignore_index=True).to_csv(
         os.path.join(TABLES_DIR, "recommendation_customer_examples.csv"), index=False
     )
-
-    print("\nSaved outputs/tables/recommendation_similar_products_examples.csv")
-    print("Saved outputs/tables/recommendation_customer_examples.csv")
+    print("\nSaved outputs/tables/recommendation_customer_examples.csv")
 
 
 if __name__ == "__main__":
