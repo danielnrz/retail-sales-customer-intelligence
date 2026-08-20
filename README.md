@@ -16,7 +16,7 @@ the cleaned transactions.
 - What kinds of customers show up in the transaction history, based on
   how recently, how often, and how much they buy?
 - Which customers look like they are becoming inactive?
-- Can transaction details help estimate what a product's price should be?
+- Can transaction details help estimate the unit price charged for a product?
 - Given a customer's purchase history, what other products make sense to
   recommend?
 

@@ -3,8 +3,9 @@
 -- out one at a time and save the results
 
 -- query: total_revenue
--- total net revenue across the whole dataset (cancellations included as
--- negative revenue since they reduce what the business actually kept)
+-- total revenue from completed orders only. cancelled invoices are
+-- excluded entirely here, not netted off as negative revenue, so this
+-- number is gross revenue from orders that were not cancelled
 SELECT ROUND(SUM(revenue), 2) AS total_revenue
 FROM transactions
 WHERE is_cancelled = 0;
