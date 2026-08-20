@@ -1,0 +1,315 @@
+{
+  "monthly_revenue": [
+    {
+      "year_month": "2009-12",
+      "monthly_revenue": 822483.95,
+      "order_count": 1929
+    },
+    {
+      "year_month": "2010-01",
+      "monthly_revenue": 651155.11,
+      "order_count": 1333
+    },
+    {
+      "year_month": "2010-02",
+      "monthly_revenue": 551504.73,
+      "order_count": 1729
+    },
+    {
+      "year_month": "2010-03",
+      "monthly_revenue": 830915.26,
+      "order_count": 1960
+    },
+    {
+      "year_month": "2010-04",
+      "monthly_revenue": 678875.25,
+      "order_count": 1587
+    },
+    {
+      "year_month": "2010-05",
+      "monthly_revenue": 657705.5,
+      "order_count": 2011
+    },
+    {
+      "year_month": "2010-06",
+      "monthly_revenue": 749537.31,
+      "order_count": 1859
+    },
+    {
+      "year_month": "2010-07",
+      "monthly_revenue": 648810.27,
+      "order_count": 1672
+    },
+    {
+      "year_month": "2010-08",
+      "monthly_revenue": 695251.91,
+      "order_count": 1604
+    },
+    {
+      "year_month": "2010-09",
+      "monthly_revenue": 921696.99,
+      "order_count": 2004
+    },
+    {
+      "year_month": "2010-10",
+      "monthly_revenue": 1161902.22,
+      "order_count": 2488
+    },
+    {
+      "year_month": "2010-11",
+      "monthly_revenue": 1464293.14,
+      "order_count": 3093
+    },
+    {
+      "year_month": "2010-12",
+      "monthly_revenue": 821452.73,
+      "order_count": 1699
+    },
+    {
+      "year_month": "2011-01",
+      "monthly_revenue": 689811.61,
+      "order_count": 1216
+    },
+    {
+      "year_month": "2011-02",
+      "monthly_revenue": 522545.56,
+      "order_count": 1174
+    },
+    {
+      "year_month": "2011-03",
+      "monthly_revenue": 716215.26,
+      "order_count": 1665
+    },
+    {
+      "year_month": "2011-04",
+      "monthly_revenue": 536968.49,
+      "order_count": 1504
+    },
+    {
+      "year_month": "2011-05",
+      "monthly_revenue": 769296.61,
+      "order_count": 1848
+    },
+    {
+      "year_month": "2011-06",
+      "monthly_revenue": 760547.01,
+      "order_count": 1683
+    },
+    {
+      "year_month": "2011-07",
+      "monthly_revenue": 718076.12,
+      "order_count": 1657
+    },
+    {
+      "year_month": "2011-08",
+      "monthly_revenue": 746779.32,
+      "order_count": 1456
+    },
+    {
+      "year_month": "2011-09",
+      "monthly_revenue": 1056435.19,
+      "order_count": 1994
+    },
+    {
+      "year_month": "2011-10",
+      "monthly_revenue": 1151263.73,
+      "order_count": 2275
+    },
+    {
+      "year_month": "2011-11",
+      "monthly_revenue": 1503866.78,
+      "order_count": 3021
+    },
+    {
+      "year_month": "2011-12",
+      "monthly_revenue": 637808.33,
+      "order_count": 869
+    }
+  ],
+  "years": [
+    "2009",
+    "2010",
+    "2011"
+  ],
+  "revenue_by_country": [
+    {
+      "country": "United Kingdom",
+      "total_revenue": 17399134.06,
+      "order_count": 41787
+    },
+    {
+      "country": "EIRE",
+      "total_revenue": 658767.31,
+      "order_count": 626
+    },
+    {
+      "country": "Netherlands",
+      "total_revenue": 554038.09,
+      "order_count": 229
+    },
+    {
+      "country": "Germany",
+      "total_revenue": 425019.71,
+      "order_count": 789
+    },
+    {
+      "country": "France",
+      "total_revenue": 350456.09,
+      "order_count": 622
+    },
+    {
+      "country": "Australia",
+      "total_revenue": 169283.46,
+      "order_count": 95
+    },
+    {
+      "country": "Spain",
+      "total_revenue": 108332.49,
+      "order_count": 154
+    },
+    {
+      "country": "Switzerland",
+      "total_revenue": 100685.59,
+      "order_count": 93
+    },
+    {
+      "country": "Sweden",
+      "total_revenue": 91869.82,
+      "order_count": 105
+    },
+    {
+      "country": "Denmark",
+      "total_revenue": 68580.69,
+      "order_count": 43
+    },
+    {
+      "country": "Belgium",
+      "total_revenue": 65387.82,
+      "order_count": 149
+    },
+    {
+      "country": "Norway",
+      "total_revenue": 56322.5,
+      "order_count": 45
+    },
+    {
+      "country": "Portugal",
+      "total_revenue": 56283.53,
+      "order_count": 95
+    },
+    {
+      "country": "Channel Islands",
+      "total_revenue": 44623.33,
+      "order_count": 55
+    },
+    {
+      "country": "Japan",
+      "total_revenue": 43023.91,
+      "order_count": 33
+    }
+  ],
+  "top_products_by_revenue": [
+    {
+      "stock_code": "22423",
+      "description": "REGENCY CAKESTAND 3 TIER",
+      "total_revenue": 330590.32
+    },
+    {
+      "stock_code": "85123A",
+      "description": "WHITE HANGING HEART T-LIGHT HOLDER",
+      "total_revenue": 257546.2
+    },
+    {
+      "stock_code": "23843",
+      "description": "PAPER CRAFT , LITTLE BIRDIE",
+      "total_revenue": 168469.6
+    },
+    {
+      "stock_code": "47566",
+      "description": "PARTY BUNTING",
+      "total_revenue": 148318.28
+    },
+    {
+      "stock_code": "85099B",
+      "description": "JUMBO BAG RED RETROSPOT",
+      "total_revenue": 145961.83
+    },
+    {
+      "stock_code": "84879",
+      "description": "ASSORTED COLOUR BIRD ORNAMENT",
+      "total_revenue": 129324.49
+    },
+    {
+      "stock_code": "22086",
+      "description": "PAPER CHAIN KIT 50'S CHRISTMAS ",
+      "total_revenue": 117760.29
+    },
+    {
+      "stock_code": "23166",
+      "description": "MEDIUM CERAMIC TOP STORAGE JAR",
+      "total_revenue": 81700.92
+    },
+    {
+      "stock_code": "79321",
+      "description": "CHILLI LIGHTS",
+      "total_revenue": 80540.88
+    },
+    {
+      "stock_code": "84347",
+      "description": "ROTATING SILVER ANGELS T-LIGHT HLDR",
+      "total_revenue": 71300.4
+    }
+  ],
+  "top_products_by_quantity": [
+    {
+      "stock_code": "84077",
+      "description": "WORLD WAR 2 GLIDERS ASSTD DESIGNS",
+      "total_units_sold": 106250
+    },
+    {
+      "stock_code": "21212",
+      "description": "PACK OF 72 RETROSPOT CAKE CASES",
+      "total_units_sold": 94884
+    },
+    {
+      "stock_code": "85123A",
+      "description": "WHITE HANGING HEART T-LIGHT HOLDER",
+      "total_units_sold": 94147
+    },
+    {
+      "stock_code": "23843",
+      "description": "PAPER CRAFT , LITTLE BIRDIE",
+      "total_units_sold": 80995
+    },
+    {
+      "stock_code": "84879",
+      "description": "ASSORTED COLOUR BIRD ORNAMENT",
+      "total_units_sold": 80090
+    },
+    {
+      "stock_code": "23166",
+      "description": "MEDIUM CERAMIC TOP STORAGE JAR",
+      "total_units_sold": 78033
+    },
+    {
+      "stock_code": "85099B",
+      "description": "JUMBO BAG RED RETROSPOT",
+      "total_units_sold": 77286
+    },
+    {
+      "stock_code": "17003",
+      "description": "BROCADE RING PURSE ",
+      "total_units_sold": 70379
+    },
+    {
+      "stock_code": "21977",
+      "description": "PACK OF 60 PINK PAISLEY CAKE CASES",
+      "total_units_sold": 56061
+    },
+    {
+      "stock_code": "84991",
+      "description": "60 TEATIME FAIRY CAKE CASES",
+      "total_units_sold": 54028
+    }
+  ]
+}

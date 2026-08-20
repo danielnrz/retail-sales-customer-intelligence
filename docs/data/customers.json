@@ -1,0 +1,96 @@
+{
+  "segments": [
+    {
+      "cluster": 0,
+      "customers": 1186,
+      "avg_recency": 28.022765598650928,
+      "avg_frequency": 19.18549747048904,
+      "avg_monetary": 10641.64641652614,
+      "segment_name": "High Value"
+    },
+    {
+      "cluster": 1,
+      "customers": 1452,
+      "avg_recency": 227.74035812672176,
+      "avg_frequency": 5.075757575757576,
+      "avg_monetary": 1919.7292630853997,
+      "segment_name": "At Risk"
+    },
+    {
+      "cluster": 2,
+      "customers": 1969,
+      "avg_recency": 392.5754189944134,
+      "avg_frequency": 1.3788725241239208,
+      "avg_monetary": 317.23074657186385,
+      "segment_name": "Lapsed"
+    },
+    {
+      "cluster": 3,
+      "customers": 1246,
+      "avg_recency": 28.220706260032102,
+      "avg_frequency": 3.028892455858748,
+      "avg_monetary": 841.9092215088282,
+      "segment_name": "Occasional"
+    }
+  ],
+  "churn": {
+    "logistic_regression": {
+      "precision": 0.75,
+      "recall": 0.81,
+      "f1": 0.779,
+      "roc_auc": 0.812
+    },
+    "random_forest": {
+      "precision": 0.737,
+      "recall": 0.787,
+      "f1": 0.761,
+      "roc_auc": 0.793
+    }
+  },
+  "churn_feature_importance": [
+    {
+      "feature": "active_months",
+      "coefficient": -0.5657
+    },
+    {
+      "feature": "unique_products",
+      "coefficient": -0.3243
+    },
+    {
+      "feature": "monetary",
+      "coefficient": -0.0915
+    },
+    {
+      "feature": "cancellation_rate",
+      "coefficient": -0.0664
+    },
+    {
+      "feature": "avg_order_value",
+      "coefficient": 0.0032
+    },
+    {
+      "feature": "cancelled_orders",
+      "coefficient": 0.0034
+    },
+    {
+      "feature": "is_uk",
+      "coefficient": 0.0079
+    },
+    {
+      "feature": "total_quantity",
+      "coefficient": 0.0316
+    },
+    {
+      "feature": "frequency",
+      "coefficient": 0.1613
+    },
+    {
+      "feature": "avg_days_between_purchases",
+      "coefficient": 0.2783
+    },
+    {
+      "feature": "recency",
+      "coefficient": 0.6284
+    }
+  ]
+}
