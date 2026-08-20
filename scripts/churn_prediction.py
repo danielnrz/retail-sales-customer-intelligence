@@ -190,6 +190,9 @@ def main():
     plt.close(fig)
     print("Saved outputs/figures/18_churn_feature_importance.png")
 
+    coef_table.round(4).to_csv(os.path.join(TABLES_DIR, "churn_feature_importance.csv"), index=False)
+    print("Saved outputs/tables/churn_feature_importance.csv")
+
     data.to_csv(os.path.join(TABLES_DIR, "churn_features_and_labels.csv"), index=False)
     print("Saved outputs/tables/churn_features_and_labels.csv")
 

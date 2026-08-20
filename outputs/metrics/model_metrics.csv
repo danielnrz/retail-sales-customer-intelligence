@@ -1,12 +1,4 @@
 model,metric,value
-churn_logistic_regression,precision,0.75
-churn_logistic_regression,recall,0.81
-churn_logistic_regression,F1,0.779
-churn_logistic_regression,ROC_AUC,0.812
-churn_random_forest,precision,0.737
-churn_random_forest,recall,0.787
-churn_random_forest,F1,0.761
-churn_random_forest,ROC_AUC,0.793
 price_baseline,MAE,1.822
 price_baseline,RMSE,4.475
 price_prediction,MAE,1.311
@@ -22,3 +14,11 @@ demand_gradient_boosting,MAE,245.89
 demand_gradient_boosting,RMSE,418.43
 recommendation_popularity_baseline,HitRate@5,0.163
 recommendation_item_item,HitRate@5,0.21
+churn_logistic_regression,precision,0.75
+churn_logistic_regression,recall,0.81
+churn_logistic_regression,F1,0.779
+churn_logistic_regression,ROC_AUC,0.812
+churn_random_forest,precision,0.737
+churn_random_forest,recall,0.787
+churn_random_forest,F1,0.761
+churn_random_forest,ROC_AUC,0.793

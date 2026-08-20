@@ -1,0 +1,12 @@
+feature,coefficient
+active_months,-0.5657
+unique_products,-0.3243
+monetary,-0.0915
+cancellation_rate,-0.0664
+avg_order_value,0.0032
+cancelled_orders,0.0034
+is_uk,0.0079
+total_quantity,0.0316
+frequency,0.1613
+avg_days_between_purchases,0.2783
+recency,0.6284
