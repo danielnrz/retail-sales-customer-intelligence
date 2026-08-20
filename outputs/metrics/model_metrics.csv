@@ -5,3 +5,11 @@ sales_forecast_linear_regression,MAE,52379.8
 sales_forecast_linear_regression,RMSE,64765.13
 demand_prediction,MAE,276.25
 demand_prediction,RMSE,519.96
+churn_logistic_regression,precision,0.75
+churn_logistic_regression,recall,0.81
+churn_logistic_regression,F1,0.779
+churn_logistic_regression,ROC_AUC,0.812
+churn_random_forest,precision,0.737
+churn_random_forest,recall,0.787
+churn_random_forest,F1,0.761
+churn_random_forest,ROC_AUC,0.793
